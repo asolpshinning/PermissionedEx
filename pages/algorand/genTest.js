@@ -11,6 +11,7 @@ import { useState, useRef, useEffect } from "react";
 //
 let Address = 'Address';
 let Bool = 'Bool';
+const cenCtc = '91149871';
 
 const API = (arg) => {
     return arg;
@@ -28,6 +29,11 @@ const User = API({
     stCtcId: Fun([Address], Bool),
 });
 //
+//useful function for reading user-entered values from input boxes
+  const getElement = (className) => {
+    let theElement = document.getElementsByClassName(className)[0];
+    return theElement.value
+  }
 
 function Deliver() {
   const [address, setAddress] = useState("Connect Your Wallet. Click 'connect'");
@@ -42,7 +48,7 @@ function Deliver() {
   };
   
   //API for saving new contract address into DB
-  const callAPI = async (reachBackend, ctcDeployed, worked, apiName, apiArg) => {
+  const callAPI = async (reachBackend, ctcDeployed, apiName, apiArg) => {
     const reach = loadStdlib.loadStdlib({REACH_CONNECTOR_MODE: "ALGO"});
     reach.setWalletFallback(reach.walletFallback({providerEnv: 'TestNet', MyAlgoConnect }));
     const acc = await reach.getDefaultAccount();
@@ -52,7 +58,7 @@ function Deliver() {
         let res = undefined;
         try {
             res = await f();
-            console.log(worked)
+            console.log(`the ${apiName} API has successfully worked. Here is the response:`, res)
         } catch (e) {
             res = [`err`, e]
             console.log(`there is an error`, e)
@@ -64,41 +70,62 @@ function Deliver() {
       let apiReturn;
       for (const f in apis){
         if(f == apiName){
-          apiReturn = await apis[apiName](apiArg);
+          apiReturn = await apis[apiName](...apiArg);
         } 
       }
         return apiReturn;
     });
   }
 
+  //this is just an example of how callAPI works - worked well BTW
   const saveToDB = () => {
     callAPI(
       backendDB,
-      '91149871',
-      'Yes this test API worked',
+      cenCtc,
       'stCtcId',
-      '0x00000e'
+      ['0x00000e']
     )
+  }
+
+  // this is the function that executes and call the callAPI
+  const runAPI = (apiName) => {
+    let arrArg = [];
+    User[apiName][0].map(
+      (j, index) => {
+        let input = getElement(`${apiName}${User[apiName][0]}${index+1}`);
+        //console.log(getElement(input))
+        arrArg = arrArg.concat(input);
+      }
+    )
+    //console.log(arrArg)
+   callAPI(backendDB, cenCtc, apiName, arrArg )
   }
 
   const deploy = () => {
     //fill this in later
   }
+  
 // this is the div that is generated from the API code
   const apiDivs = () => {
     let array = [];
     let counter = 0;
     for (const i in User){
+      User[i][0].map(
+        (j, index) => {
+          let div = 
+            <div>
+              <br/>
+              {`${i} ${User[i][0]} ==> `}
+              <input className = {`${i}${User[i][0][0]}${index+1}`}></input>
+              <br/>
+              <button onClick = {() => runAPI(i)}>Call {i} API</button>
+            </div>
+          console.log(`${i}${User[i][0][index]}${index++}`)
+          array = array.concat(div);
+        }
+      )
+      
       counter++
-      let div = 
-        <div>
-          <br/>
-          {`${i} ${User[i][0]} ==> `}
-          <input className = {`${i}${User[i][0]}${counter}`}></input>
-          <br/>
-          <button>Call {i} API</button>
-        </div>
-      array = array.concat(div);
     }
     console.log(array);
     return array;
