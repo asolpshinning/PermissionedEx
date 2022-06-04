@@ -22,11 +22,8 @@ export default function Home() {
   const [address, setAddress] = useState("Connect Your Wallet. Click 'connect'");
   const [balance, setBalance] = useState(0);
   const [btDeploy, setBtDeploy] = useState(['DEPLOY' , `USDC or Equivalent`, 'USDC/BT']);
-  const [stDeploy, setStDeploy] = useState(['DEPLOY' , ` Share Tokens`, 'ST or Equivalent']);
   const [ctcDeploy, setCtcDeploy] = useState(`DEPLOY`);
-  const [lock, setLock] = useState(`Sales unlocked. Approved investors are free to trade`);
-  const [totTokens, setTotTokens] = useState([0,0,0]);
-  const [totTokensRec, setTotTokensRec] = useState([0,0,0]);
+  //const [lock, setLock] = useState(`Sales unlocked. Approved investors are free to trade`);
   const [tokenData, setTokenData] = useState(
     <div>
       
