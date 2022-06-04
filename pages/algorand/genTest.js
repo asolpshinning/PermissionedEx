@@ -8,6 +8,27 @@ import * as backendDB from '../../reachBackend/indexDB3.main.js'
 import React from "react";
 import { useState, useRef, useEffect } from "react";
 
+//
+let Address = 'Address';
+let Bool = 'Bool';
+
+const API = (arg) => {
+    return arg;
+}
+const Fun = (arg1, arg2) => {
+    return [arg1, arg2]
+}
+//this is an input that needs to be provided by the smart contract developer
+const User = API({
+    // transfer(to, amt)
+    manCtcId: Fun([Address], Bool),
+    // transferFrom(from, to, amt)
+    btCtcId: Fun([Address], Bool),
+    // approve(approved, amt)
+    stCtcId: Fun([Address], Bool),
+});
+//
+
 function Deliver() {
   const [address, setAddress] = useState("Connect Your Wallet. Click 'connect'");
   const [balance, setBalance] = useState(0);
@@ -21,11 +42,11 @@ function Deliver() {
   };
   
   //API for saving new contract address into DB
-  const api = async (reachBackend, ctcDeployed,worked, errored, apiArg) => {
+  const callAPI = async (reachBackend, ctcDeployed, worked, apiName, apiArg) => {
     const reach = loadStdlib.loadStdlib({REACH_CONNECTOR_MODE: "ALGO"});
     reach.setWalletFallback(reach.walletFallback({providerEnv: 'TestNet', MyAlgoConnect }));
     const acc = await reach.getDefaultAccount();
-    const ctc = acc.contract(reachBbackend, ctcDeployed);
+    const ctc = acc.contract(reachBackend, ctcDeployed);
     
     const call = async (f) => {
         let res = undefined;
@@ -34,15 +55,53 @@ function Deliver() {
             console.log(worked)
         } catch (e) {
             res = [`err`, e]
-            console.log(errored)
+            console.log(`there is an error`, e)
         }
     };
-
+    //
     const apis = ctc.a;
     call(async () => {
-        const apiReturn = await apis.btCtcId(apiArg);
+      let apiReturn;
+      for (const f in apis){
+        if(f == apiName){
+          apiReturn = await apis[apiName](apiArg);
+        } 
+      }
         return apiReturn;
     });
+  }
+
+  const saveToDB = () => {
+    callAPI(
+      backendDB,
+      '91149871',
+      'Yes this test API worked',
+      'stCtcId',
+      '0x00000e'
+    )
+  }
+
+  const deploy = () => {
+    //fill this in later
+  }
+// this is the div that is generated from the API code
+  const apiDivs = () => {
+    let array = [];
+    let counter = 0;
+    for (const i in User){
+      counter++
+      let div = 
+        <div>
+          <br/>
+          {`${i} ${User[i][0]} ==> `}
+          <input className = {`${i}${User[i][0]}${counter}`}></input>
+          <br/>
+          <button>Call {i} API</button>
+        </div>
+      array = array.concat(div);
+    }
+    console.log(array);
+    return array;
   }
 //
   return (
@@ -56,7 +115,7 @@ function Deliver() {
       <br/>
       <br/>
       <button onClick={saveToDB}> Add a dummy ctc to Database </button>
-      
+      {apiDivs()}
     </div>
   );
 }

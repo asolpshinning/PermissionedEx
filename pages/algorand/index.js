@@ -55,14 +55,7 @@ export default function Home() {
         btDeployed.current = true;
         console.log(`Creator has deployed BT contract: `, x[1].substring(0,10));
       }
-      const st =  await ctc.views.vStCtc(addr);
-      stcId.current = st[1];
-      //console.log('This is the share token', st)
-      if (st[1] != '0x0000000000000000000000000000000000000000000000000000000000000000') {
-        setStDeploy([`SHARE TOKEN ALREADY DEPLOYED: ${st[1].substring(0,10)}`]);
-        stDeployed.current = true;
-        //console.log(`Creator already deployed ST contract: `, st[1]);
-      }
+      
       // read central ctc from the DB and save it into var centralCtc
       const cenCtc = await ctc.views.vManCtc(addr);
       centralCtc.current = cenCtc[1].substring(0,10);
