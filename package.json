@@ -1,0 +1,24 @@
+{
+  "name": "next12",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@reach-sh/stdlib": "^0.1.10-rc.4",
+    "@replit/database": "^2.0.1",
+    "axios": "^0.25.0",
+    "ethers": "^5.5.4",
+    "next": "12.0.1",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
+  },
+  "devDependencies": {
+    "eslint": "7",
+    "eslint-config-next": "12.0.1"
+  }
+}
