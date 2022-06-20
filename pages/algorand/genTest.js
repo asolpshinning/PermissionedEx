@@ -7,6 +7,9 @@ import { ALGO_MyAlgoConnect as MyAlgoConnect } from '@reach-sh/stdlib';
 import * as backendDB from '../../reachBackend/indexDB3.main.js'
 import React from "react";
 import { useState, useRef, useEffect } from "react";
+import { Sandpack } from "@codesandbox/sandpack-react";
+import {codeApp} from './codeApp'
+//import "@codesandbox/sandpack-react/dist/index.css";
 
 //
 let Address = 'Address';
@@ -143,6 +146,19 @@ function Deliver() {
       <br/>
       <button onClick={saveToDB}> Add a dummy ctc to Database </button>
       {apiDivs()}
+      <br/>
+      <Sandpack 
+        template="react"
+        theme="dark"
+        files={{
+        "/App.js": codeApp,
+        }}
+        customSetup={{
+            dependencies: {
+              "@reach-sh/stdlib": "^0.1.10-rc.4"
+          },
+        }}
+      />;
     </div>
   );
 }

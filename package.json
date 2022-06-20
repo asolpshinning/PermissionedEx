@@ -9,10 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@codesandbox/sandpack-react": "^1.1.1",
     "@reach-sh/stdlib": "^0.1.10-rc.4",
     "@replit/database": "^2.0.1",
+    "@thirdweb-dev/react": "^2.4.1",
+    "@thirdweb-dev/sdk": "^2.3.11",
     "axios": "^0.25.0",
-    "ethers": "^5.5.4",
+    "ethers": "^5.6.8",
     "next": "12.0.1",
     "react": "17.0.2",
     "react-dom": "17.0.2"

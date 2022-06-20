@@ -8,7 +8,7 @@ import {unsafeAllowMultipleStdlibs} from "@reach-sh/stdlib";
 import * as backendERC from '../../reachBackend/erc20b.main.js';
 import * as backendDB from '../../reachBackend/indexDB3.main.js'
 import * as backendST from '../../reachBackend/indexST.main.js'
-import * as backendCtc from '../../reachBackend/indexCtcALGO2.main.js'
+import * as backendCtc from '../../reachBackend/indexCtcALGO4.main.js'
 import React from "react";
 import { useState, useRef, useEffect } from "react";
 
@@ -121,11 +121,17 @@ export default function Home() {
       const tot =  await ctc.views.totSTBTD();
       const claimed = await ctc.views.totSTBTDRec(acc.getAddress());
       const allocated = await ctc.views.claimSTBT(acc.getAddress());
-      let totST = reach.bigNumberToNumber(tot[1][0]);
-      let totBT = reach.bigNumberToNumber(tot[1][1]);
-      let cST = reach.bigNumberToNumber(claimed[1][0]);
-      let cBT = reach.bigNumberToNumber(claimed[1][1]);
-      let allocatedST = reach.bigNumberToNumber(allocated[1][0]);
+      const vBtBal = await ctc.views.vBtBal();
+      const ctcVersion = await ctc.views.vcVersion();
+      const vCcCm = await ctc.views.vCcCm();
+      let totST = parseInt(reach.bigNumberToBigInt(tot[1][0]));
+      let totBT = parseInt(reach.bigNumberToBigInt(tot[1][1]));
+      let cST = parseInt(reach.bigNumberToBigInt(claimed[1][0]));
+      let cBT = parseInt(reach.bigNumberToBigInt(claimed[1][1]));
+      let allocatedST = parseInt(reach.bigNumberToBigInt(allocated[1][0]));
+      let btBal = parseInt(reach.bigNumberToBigInt(vBtBal[1]));
+      let cCcM = vCcCm;
+      
       console.log('This is the total share token: ',totST, 'and total backing token: ', totBT);
     setTokenData(
     <div>
@@ -136,7 +142,13 @@ export default function Home() {
 
       FOR SYNDICATOR: <br/>
       Total share tokens allocated since launch ==> <b>{totST}</b> <br/>
-      Total backing tokens sent to contract since launch ==> <b>{totBT}</b> <br/>
+      Total backing tokens sent to contract since launch ==> <b>{totBT}</b> <br/><br/>
+      Total backing tokens currently in the smart contract ==> <b>{btBal}</b> <br/><br/>
+      Current Smart Contract Manager ==> <b>{cCcM[1][1]}</b> <br/><br/>
+      Current Smart Contract Creator ==> <b>{cCcM[1][0]}</b> <br/><br/>
+
+      FOR COOPERATIV: <br/>
+      Smart Contract Version: <b>{ctcVersion[1]}</b> <br/><br/>
       
     </div>
     )
@@ -362,14 +374,13 @@ export default function Home() {
     reach.setWalletFallback(reach.walletFallback({providerEnv: 'TestNet', MyAlgoConnect }));
     const acc = await reach.getDefaultAccount();
     const addr = acc.getAddress();
-    //const amt = parseInt(getElement('cBT'));
     const cenContr = getElement('cenContr');
     const ctc = acc.contract(backendCtc, cenContr);
     const call = async (f) => {
                     let res = undefined;
                     try {
                         res = await f();
-                        console.log(`This ${addr} has just claimed this amount of Backing token from the Central Contract: `, amt)
+                        console.log(`This ${addr} has just claimed all his/her Backing token from the Central Contract: `)
                     } catch (e) {
                         res = [`err`, e]
                         console.log(`There is an error: `, e)

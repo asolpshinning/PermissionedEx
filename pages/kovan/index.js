@@ -13,7 +13,7 @@ import { useState, useRef, useEffect } from "react";
 //
 
 export default function Home() {
-  const dbCtcId = '0x28f434B75693DF60eFB4830dEA68BB5Eb6F9546d' //Algorand deployed DB test1 //'91227394' DB 2//
+  const dbCtcId = '0xffd647a596d9ec345d9cbd4d1235d9d957a9fde1'// KOVAN => '0x28f434B75693DF60eFB4830dEA68BB5Eb6F9546d' //Algorand deployed DB test1 //'91227394' DB 2//
   const [address, setAddress] = useState("Connect Your Wallet. Click 'connect'");
   const [balance, setBalance] = useState(0);
   const [btDeploy, setBtDeploy] = useState(['DEPLOY' , `USDC or Equivalent`, 'USDC/BT']);
@@ -319,7 +319,7 @@ export default function Home() {
       })])
   }
   // Save to DB
-  const saveToDB = async () => {
+  const saveToDB = async (arg) => {
     const reach = loadStdlib.loadStdlib({REACH_CONNECTOR_MODE: "ETH-browser"});
     const acc = await reach.getDefaultAccount();
     const ctc = acc.contract(backendDB, dbCtcId);
@@ -333,17 +333,21 @@ export default function Home() {
             res = [`err`, e]
             console.log(`There is an error: `, e)
         }
-        const vBtCtc = await ctc.views.vBtCtc(acc.getAddress());
-        console.log(`User has deployed BT contract: `, vBtCtc[1])
+        /* const vBtCtc = await ctc.views.vBtCtc(acc.getAddress());
+        console.log(`User has deployed BT contract: `, vBtCtc[1]) */
 
     };
 
     const apis = ctc.a;
     console.log(apis);
     call(async () => {
-        const id = reach.bigNumberToHex(91151742);
-        console.log(id);
-        const apiReturn = await apis.btCtcId(id._hex);
+        let apiReturn;
+        const bt = '';
+        const st = '';
+        const man = '';
+        if(arg = 'bt') apiReturn = await apis.btCtcId(bt);
+        if(arg = 'st') apiReturn = await apis.stCtcId(st);
+        if(arg = 'man') apiReturn = await apis.manCtcId(man);
         console.log(`wait for it... db should...`, apiReturn);
         return apiReturn;
     });
@@ -411,7 +415,11 @@ export default function Home() {
       <br/>
       <button onClick = {deployDB}>Deploy DB</button> 
       <br/>
-       <button onClick = {saveToDB}>Save BT to DB</button>
+       <button onClick = {() => saveToDB('bt')}>Save BT to DB</button>
+        <br/>
+      <button onClick = {() => saveToDB('st')}>Save ST to DB</button>
+      <br/>
+      <button onClick = {() => saveToDB('man')}>Save ManCtc to DB</button>
       <br/>
 
       <h2>Deploy Backing Token Contract (e.g USDC for testing purpose only) </h2>
