@@ -16,15 +16,15 @@ const cenCtc = '91149871';
 const API = (arg = {apiName: [['']]}) => {
     return arg;
 }
-const Fun = (arg1, arg2 , arg3) => {
-    return [arg1, arg2, arg3]
+const Fun = (arg1, arg2 , arg3, arg4) => {
+    return [arg1, arg2, arg3, arg4]
 }
 //this is an input that needs to be provided by the smart contract developer
 const User = API({
-    safeTransferFrom: Fun([Address, Address, UInt], Bool, ["From", "To", "Amount"]),
-    transferFrom: Fun([Address, Address, UInt], Bool, ["From", "To", "Amount"]),
-    approve: Fun([Address, UInt], Bool, ["Spender", "Amount"]),
-    setApprovalForAll: Fun([Address, Bool], Bool, ["Operator", "Approved"]),
+    safeTransferFrom: Fun([Address, Address, UInt], Bool, ["From", "To", "Amount"], `Transfer token SAFELY from one address to another`),
+    transferFrom: Fun([Address, Address, UInt], Bool, ["From", "To", "Amount"], `Transfer token from one address to another`),
+    approve: Fun([Address, UInt], Bool, ["Spender", "Amount"], `Approve the transfer of tokens on behalf of a spender`),
+    setApprovalForAll: Fun([Address, Bool], Bool, ["Operator", "Approved"], `Approve all transfers on behalf of a spender`),
 });
 //
 //useful function for reading user-entered values from input boxes
@@ -56,20 +56,26 @@ function Deliver() {
         let res = undefined;
         try {
             res = await f();
-            console.log(`the ${apiName} API has successfully worked. Here is the response:`, res)
+            if (res == `no`) {console.log(`"${apiName}" API is not available from Reach backend`); 
+                alert(`"${apiName}" API is not available from Reach backend`);}
+            else {console.log(`the "${apiName}" API has successfully worked. Here is the response:`, res)
+                alert(`the "${apiName}" API has successfully worked. Here is the response:`, res)}
         } catch (e) {
             res = [`err`, e]
-            console.log(`there is an error`, e)
+            console.log(`there is an error while running "${apiName} API: "`, e);
+            alert(`there is an error while running "${apiName} API: "`, e);
         }
     };
     //
     const apis = ctc.a;
     call(async () => {
       let apiReturn;
-      for (const f in apis){
-        if(f == apiName){
+      for (const x in apis){
+        if(x == apiName){
           apiReturn = await apis[apiName](...apiArg);
-        } 
+        } else {
+            apiReturn = `no`
+        }
       }
         return apiReturn;
     });
@@ -90,7 +96,7 @@ function Deliver() {
     let arrArg = [];
     let input = User[apiName][0].map(
       (j, index) => {
-        return getElement(`${apiName}${j}${index+1}`);        
+        return j == UInt ? parseInt(getElement(`${apiName}${j}${index+1}`)) : getElement(`${apiName}${j}${index+1}`);        
       }
     )
     console.log(`this is input: `, input);
@@ -108,7 +114,6 @@ function Deliver() {
     for (const apiName in User){
       let div = User[apiName][0].map(
         (j, index) => {
-          console.log(User[apiName]);
            return(
             <div key = {`${apiName}${j}${index+1}`}>
             <br/>
@@ -118,12 +123,11 @@ function Deliver() {
             </div>)
         }
       )
-      
-      array = array.concat(div.concat(<div><button onClick = {() => runAPI(apiName)}>Call {apiName} API</button><br/><br/></div>));
+        array = array.concat(<h3>{User[apiName][3]}</h3>);
+        array = array.concat(div.concat(<div><br/><button onClick = {() => runAPI(apiName)}>Call {apiName} API</button><br/><br/><br/></div>));
       
       counter++
     }
-    //console.log(array);
     return array;
   }
 //
